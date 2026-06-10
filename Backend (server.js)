@@ -1,0 +1,42 @@
+const express = require("express");
+const mysql = require("mysql2");
+const cors = require("cors");
+
+const app = express();
+
+app.use(cors());
+app.use(express.json());
+
+const db = mysql.createConnection({
+    host: "localhost",
+    user: "root",
+    password: "",
+    database: "eventdb"
+});
+
+db.connect((err) => {
+    if(err) {
+        console.log(err);
+    } else {
+        console.log("MySQL Connected");
+    }
+});
+
+app.post("/register", (req, res) => {
+    const { name, email, event } = req.body;
+
+    const sql =
+    "INSERT INTO registrations(name,email,event_name) VALUES(?,?,?)";
+
+    db.query(sql, [name, email, event], (err) => {
+        if(err) {
+            res.json({ message: "Registration Failed" });
+        } else {
+            res.json({ message: "Registration Successful" });
+        }
+    });
+});
+
+app.listen(3000, () => {
+    console.log("Server running on port 3000");
+});
